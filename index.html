@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>AI CRM Assistant</title>
+
+<style>
+
+body{
+font-family: Arial;
+margin:40px;
+background:#f5f5f5;
+}
+
+h1{
+color:#333;
+}
+
+.section{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+input, textarea{
+width:100%;
+padding:8px;
+margin:5px 0;
+}
+
+button{
+padding:10px;
+background:#007BFF;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+pre{
+background:#eee;
+padding:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>AI CRM Assistant Dashboard</h1>
+
+<div class="section">
+
+<h2>AI Chat Assistant</h2>
+
+<input id="query" placeholder="Ask AI something">
+
+<button onclick="askAI()">Ask</button>
+
+<p id="response"></p>
+
+</div>
+
+<div class="section">
+
+<h2>Add Customer</h2>
+
+<input id="name" placeholder="Name">
+
+<input id="email" placeholder="Email">
+
+<input id="company" placeholder="Company">
+
+<button onclick="addCustomer()">Add Customer</button>
+
+</div>
+
+<div class="section">
+
+<h2>Customers</h2>
+
+<button onclick="loadCustomers()">Show Customers</button>
+
+<pre id="customers"></pre>
+
+</div>
+
+<div class="section">
+
+<h2>Generate Sales Email</h2>
+
+<input id="emailName" placeholder="Customer Name">
+
+<input id="product" placeholder="Product">
+
+<button onclick="generateEmail()">Generate Email</button>
+
+<pre id="emailResult"></pre>
+
+</div>
+
+<div class="section">
+
+<h2>Meeting Notes Summary</h2>
+
+<textarea id="notes" placeholder="Paste meeting notes here"></textarea>
+
+<button onclick="summarize()">Summarize</button>
+
+<pre id="summary"></pre>
+
+</div>
+
+<script>
+
+async function askAI(){
+
+let q=document.getElementById("query").value
+
+let res=await fetch("http://127.0.0.1:8000/agent?query="+q)
+
+let data=await res.json()
+
+document.getElementById("response").innerText=data.response
+
+}
+
+async function addCustomer(){
+
+let name=document.getElementById("name").value
+let email=document.getElementById("email").value
+let company=document.getElementById("company").value
+
+await fetch(`http://127.0.0.1:8000/add_customer?name=${name}&email=${email}&company=${company}`,{
+method:"POST"
+})
+
+alert("Customer Added")
+
+}
+
+async function loadCustomers(){
+
+let res=await fetch("http://127.0.0.1:8000/customers")
+
+let data=await res.json()
+
+document.getElementById("customers").innerText=JSON.stringify(data,null,2)
+
+}
+
+async function generateEmail(){
+
+let name=document.getElementById("emailName").value
+let product=document.getElementById("product").value
+
+let res=await fetch(`http://127.0.0.1:8000/generate_email?name=${name}&product=${product}`)
+
+let data=await res.json()
+
+document.getElementById("emailResult").innerText=data.email
+
+}
+
+async function summarize(){
+
+let notes=document.getElementById("notes").value
+
+let res=await fetch(`http://127.0.0.1:8000/summarize?notes=${notes}`)
+
+let data=await res.json()
+
+document.getElementById("summary").innerText=data.summary
+
+}
+
+</script>
+
+</body>
+
+</html>
